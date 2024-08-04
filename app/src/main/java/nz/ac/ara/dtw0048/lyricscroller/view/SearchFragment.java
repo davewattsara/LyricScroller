@@ -62,9 +62,9 @@ public class SearchFragment extends Fragment implements SearchResultListener {
     }
 
     @Override
-    public void onSearchResultsFound(SearchResult[] results) {
+    public void onSearchResultsFound(SearchResult result) {
         Bundle args = new Bundle();
-        args.putParcelableArray(SearchResultsFragment.ARG_SEARCH_RESULTS, results);
-        Navigation.findNavController(view).navigate(R.id.action_searchFragment_to_searchResultsFragment, args);
+        args.putParcelable(LyricFragment.ARG_SEARCH_RESULT, result);
+        Navigation.findNavController(view).navigate(R.id.action_searchFragment_to_lyricFragment, args);
     }
 }

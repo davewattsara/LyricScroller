@@ -3,6 +3,7 @@ package nz.ac.ara.dtw0048.lyricscroller.view;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +25,7 @@ public class SearchResultsFragment extends Fragment {
     public static final String ARG_SEARCH_RESULTS = "search_results";
 
     private SearchResult[] searchResults;
+    private View view;
 
     public SearchResultsFragment() {
         // Required empty public constructor
@@ -32,10 +34,16 @@ public class SearchResultsFragment extends Fragment {
     public static SearchResultsFragment newInstance(SearchResult[] searchResults) {
         SearchResultsFragment fragment = new SearchResultsFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_SEARCH_RESULTS, param1);
         args.putParcelableArray(ARG_SEARCH_RESULTS, searchResults);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void onResultClicked(SearchResult result) {
+        Bundle args = new Bundle();
+        args.putParcelable("search_result", result);
+        //Navigation.findNavController(view).navigate(
+        //        R.id.action_searchResultsFragment_to_lyricFragment, args);
     }
 
     @Override
@@ -53,9 +61,11 @@ public class SearchResultsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search_results, container, false);
 
         RecyclerView recyclerView = view.findViewById(R.id.searchResultsRecyclerView);
-        SearchRecyclerViewAdapter adapter = new SearchRecyclerViewAdapter(getContext(), searchResults);
+        SearchRecyclerViewAdapter adapter = new SearchRecyclerViewAdapter(this, searchResults);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        this.view = view;
 
         return view;
     }

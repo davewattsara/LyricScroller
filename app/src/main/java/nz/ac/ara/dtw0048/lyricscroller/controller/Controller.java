@@ -36,10 +36,14 @@ public class Controller implements SearchResultListener {
         lyricScroller.getSearchResults(query);
     }
 
+    //public void getLyrics(int id) {
+    //    lyricScroller.getLyrics(id);
+    //}
+
     @Override
-    public void onSearchResultsFound(SearchResult[] results) {
+    public void onSearchResultsFound(SearchResult result) {
         if (searchResultListener != null) {
-            searchResultListener.onSearchResultsFound(results);
+            searchResultListener.onSearchResultsFound(result);
         }
     }
 }

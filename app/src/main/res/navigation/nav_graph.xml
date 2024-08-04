@@ -19,19 +19,12 @@
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" >
         <action
-            android:id="@+id/action_searchFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
-        <action
-            android:id="@+id/action_searchFragment_to_searchResultsFragment"
-            app:destination="@id/searchResultsFragment" />
+            android:id="@+id/action_searchFragment_to_lyricFragment"
+            app:destination="@id/lyricFragment" />
     </fragment>
     <fragment
-        android:id="@+id/searchResultsFragment"
-        android:name="nz.ac.ara.dtw0048.lyricscroller.view.SearchResultsFragment"
-        android:label="fragment_search_results"
-        tools:layout="@layout/fragment_search_results" >
-        <action
-            android:id="@+id/action_searchResultsFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
-    </fragment>
+        android:id="@+id/lyricFragment"
+        android:name="nz.ac.ara.dtw0048.lyricscroller.view.LyricFragment"
+        android:label="fragment_lyric"
+        tools:layout="@layout/fragment_lyric" />
 </navigation>

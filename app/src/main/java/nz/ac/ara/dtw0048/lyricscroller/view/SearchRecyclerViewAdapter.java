@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import nz.ac.ara.dtw0048.lyricscroller.R;
@@ -15,26 +16,27 @@ import nz.ac.ara.dtw0048.lyricscroller.model.SearchResult;
 
 public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecyclerViewAdapter.MyViewHolder> {
 
-    private final Context context;
     private final SearchResult[] searchResults;
+    private final SearchResultsFragment fragment;
 
-    public SearchRecyclerViewAdapter (Context context, SearchResult[] searchResults) {
-        this.context = context;
+    public SearchRecyclerViewAdapter (SearchResultsFragment fragment, SearchResult[] searchResults) {
+        this.fragment = fragment;
         this.searchResults = searchResults;
     }
 
     @NonNull
     @Override
     public SearchRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(fragment.getContext());
         View view = inflater.inflate(R.layout.fragment_search_item, parent, false);
-        return new MyViewHolder(view);
+        return new MyViewHolder(view, fragment);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SearchRecyclerViewAdapter.MyViewHolder holder, int position) {
         holder.songNameTextView.setText(searchResults[position].getSongName());
         holder.artistNameTextView.setText(searchResults[position].getArtistName());
+        holder.searchResult = searchResults[position];
     }
 
     @Override
@@ -44,12 +46,21 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView songNameTextView, artistNameTextView;
-        public MyViewHolder(@NonNull View itemView) {
+        private final TextView songNameTextView, artistNameTextView;
+        private final SearchResultsFragment fragment;
+        private SearchResult searchResult;
+
+        public MyViewHolder(@NonNull View itemView, SearchResultsFragment fragment) {
             super(itemView);
 
+            this.fragment = fragment;
             songNameTextView = itemView.findViewById(R.id.searchResultSongName);
             artistNameTextView = itemView.findViewById(R.id.searchResultArtistName);
+            itemView.findViewById(R.id.searchResultCardView).setOnClickListener(this::onClicked);
+        }
+
+        private void onClicked(View view) {
+            fragment.onResultClicked(searchResult);
         }
     }
 }

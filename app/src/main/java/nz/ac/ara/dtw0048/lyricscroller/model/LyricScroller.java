@@ -6,26 +6,37 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LyricScroller implements HttpTask.HttpTaskListener {
+public class LyricScroller implements WebTask.WebTaskListener {
 
-    private final SearchResultListener listener;
+    private static final String HTTP_TYPE_SEARCH = "search";
+    private static final String HTTP_TYPE_LYRIC = "lyric";
+
+    private final SearchResultListener searchResultListener;
 
     public LyricScroller(SearchResultListener listener) {
-        this.listener = listener;
+        this.searchResultListener = listener;
     }
 
     public void getSearchResults(String query) {
-        String url = "https://api.genius.com/search?q=" + query;
-        new HttpTask(this, "search").execute(url);
+        //String url = "https://api.genius.com/search?q=" + query;
+        //new HttpTask(this, HTTP_TYPE_SEARCH).execute(url);
+        new WebTask(this).execute(query);
     }
 
+    //public void getLyrics(int id) {
+    //    String url = "https://api.genius.com/songs/" + id;
+    //    new HttpTask(this, HTTP_TYPE_LYRIC).execute(url);
+    //}
+
     @Override
-    public void onHttpTaskResult(HttpTask.HttpTaskResult result) {
+    public void onWebTaskResult(SearchResult result) {
+        /*
         JSONObject json = result.getJsonObject();
         try {
 
             switch (result.getType()) {
-                case "search":
+                case HTTP_TYPE_SEARCH:
+                    Log.i("JSON_RESULT_SEARCH", json.toString(2));
                     JSONArray hits = json.getJSONObject("response").getJSONArray("hits");
                     int length = hits.length();
                     SearchResult[] searchResults = new SearchResult[length];
@@ -37,12 +48,18 @@ public class LyricScroller implements HttpTask.HttpTaskListener {
                                 thisHit.getInt("id")
                         );
                     }
-                    listener.onSearchResultsFound(searchResults);
+                    searchResultListener.onSearchResultsFound(searchResults);
+                    break;
+                case HTTP_TYPE_LYRIC:
+                    Log.i("JSON_RESULT_LYRIC", json.toString(2));
                     break;
             }
         }
         catch (JSONException e) {
             e.printStackTrace();
         }
+         */
+
+        searchResultListener.onSearchResultsFound(result);
     }
 }

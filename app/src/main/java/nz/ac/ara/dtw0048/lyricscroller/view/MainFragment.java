@@ -11,7 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.IOException;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
+
 import nz.ac.ara.dtw0048.lyricscroller.R;
+import nz.ac.ara.dtw0048.lyricscroller.model.WebTask;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,6 +52,10 @@ public class MainFragment extends Fragment {
 
         view.findViewById(R.id.searchButton).setOnClickListener((v) -> {
             Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_searchFragment);
+
+            // TODO: Remove following test code and uncomment above code
+            //new WebTask().execute();
+
         });
     }
 }

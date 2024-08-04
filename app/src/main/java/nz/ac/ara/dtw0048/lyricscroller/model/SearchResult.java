@@ -8,18 +8,18 @@ import androidx.annotation.NonNull;
 public class SearchResult implements Parcelable {
     private final String songName;
     private final String artistName;
-    private final int id;
+    private final String lyrics;
 
-    public SearchResult (String songName, String artistName, int id) {
+    public SearchResult (String songName, String artistName, String lyrics) {
         this.songName = songName;
         this.artistName = artistName;
-        this.id = id;
+        this.lyrics = lyrics;
     }
 
     private SearchResult(Parcel parcel) {
         songName = parcel.readString();
         artistName = parcel.readString();
-        id = parcel.readInt();
+        lyrics = parcel.readString();
     }
 
     public String getSongName() {
@@ -30,8 +30,8 @@ public class SearchResult implements Parcelable {
         return artistName;
     }
 
-    public int getId() {
-        return id;
+    public String getLyrics() {
+        return lyrics;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SearchResult implements Parcelable {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(songName);
         dest.writeString(artistName);
-        dest.writeInt(id);
+        dest.writeString(lyrics);
     }
 
     public static final Creator<SearchResult> CREATOR = new Creator<SearchResult>() {
