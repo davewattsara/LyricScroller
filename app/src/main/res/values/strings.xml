@@ -2,5 +2,7 @@
     <string name="app_name">Lyric Scroller</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string name="no_lyrics">No lyrics were found matching your search.</string>
+    <string name="font_size">Font Size</string>
+    <string name="scroll_speed">Scroll Speed</string>
 </resources>

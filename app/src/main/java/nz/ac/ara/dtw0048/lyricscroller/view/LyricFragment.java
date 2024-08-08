@@ -58,10 +58,19 @@ public class LyricFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        TextView tv = view.findViewById(R.id.lyricTextView);
+        TextView lyricsTextView = view.findViewById(R.id.lyricTextView);
         if (searchResult == null)
-            tv.setText("No lyrics were found matching your search.");
-        else
-            tv.setText(searchResult.getLyrics());
+            lyricsTextView.setText(getString(R.string.no_lyrics));
+        else {
+            lyricsTextView.setText(searchResult.getLyrics());
+            if (searchResult.getSongName() != null) {
+                TextView titleTextView = view.findViewById(R.id.songTitleTextView);
+                titleTextView.setText(searchResult.getSongName());
+            }
+            if (searchResult.getArtistName() != null) {
+                TextView artistTextView = view.findViewById(R.id.artistTextView);
+                artistTextView.setText(searchResult.getArtistName());
+            }
+        }
     }
 }
