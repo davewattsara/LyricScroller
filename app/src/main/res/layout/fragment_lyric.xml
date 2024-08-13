@@ -8,6 +8,7 @@
 
     <!-- TODO: Update blank fragment layout -->
     <ScrollView
+        android:id="@+id/lyricScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="20dp"
@@ -35,7 +36,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/font_size"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/fontSizeSlider"
                     app:layout_constraintStart_toStartOf="parent"
@@ -45,9 +46,9 @@
                     android:id="@+id/fontSizeSlider"
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
-                    android:value="5"
+                    android:value="0.25"
                     android:valueFrom="0"
-                    android:valueTo="10"
+                    android:valueTo="1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -63,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/scroll_speed"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/scrollSpeedSlider"
                     app:layout_constraintStart_toStartOf="parent"
@@ -73,19 +74,51 @@
                     android:id="@+id/scrollSpeedSlider"
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
-                    android:value="5"
+                    android:value="0.5"
                     android:valueFrom="0"
-                    android:valueTo="10"
+                    android:valueTo="1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:text="▶" />
+                android:layout_weight="0">
+
+                <Button
+                    android:id="@+id/playButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:text="Play"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Spinner
+                    android:id="@+id/setlistSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:prompt="@string/add_to_setlist"
+                    android:spinnerMode="dialog"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/editButton"
+                    app:layout_constraintStart_toEndOf="@+id/playButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/editButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Edit"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/songTitleTextView"
@@ -93,7 +126,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:paddingTop="10dp"
-                android:text="Title"
                 android:textAlignment="center"
                 android:textSize="16sp" />
 
@@ -103,7 +135,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:paddingTop="10dp"
-                android:text="By Artist"
                 android:textAlignment="center"
                 android:textSize="16sp" />
 

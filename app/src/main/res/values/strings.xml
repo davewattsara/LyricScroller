@@ -5,4 +5,5 @@
     <string name="no_lyrics">No lyrics were found matching your search.</string>
     <string name="font_size">Font Size</string>
     <string name="scroll_speed">Scroll Speed</string>
+    <string name="add_to_setlist">Add to setlist</string>
 </resources>

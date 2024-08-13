@@ -12,6 +12,15 @@
         <action
             android:id="@+id/action_mainFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_manageSetlistsFragment"
+            app:destination="@id/manageSetlistsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_setlistSongsFragment"
+            app:destination="@id/setlistSongsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_editSongFragment"
+            app:destination="@id/editSongFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -26,5 +35,49 @@
         android:id="@+id/lyricFragment"
         android:name="nz.ac.ara.dtw0048.lyricscroller.view.LyricFragment"
         android:label="fragment_lyric"
-        tools:layout="@layout/fragment_lyric" />
+        tools:layout="@layout/fragment_lyric" >
+        <action
+            android:id="@+id/action_lyricFragment_to_addToSetlistFragment"
+            app:destination="@id/addToSetlistFragment" />
+        <action
+            android:id="@+id/action_lyricFragment_to_editSongFragment"
+            app:destination="@id/editSongFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addToSetlistFragment"
+        android:name="nz.ac.ara.dtw0048.lyricscroller.view.AddToSetlistFragment"
+        android:label="fragment_add_to_setlist"
+        tools:layout="@layout/fragment_add_to_setlist" />
+    <fragment
+        android:id="@+id/manageSetlistsFragment"
+        android:name="nz.ac.ara.dtw0048.lyricscroller.view.ManageSetlistsFragment"
+        android:label="fragment_manage_setlists"
+        tools:layout="@layout/fragment_manage_setlists" >
+        <action
+            android:id="@+id/action_manageSetlistsFragment_to_createNewSetlistFragment"
+            app:destination="@id/createNewSetlistFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createNewSetlistFragment"
+        android:name="nz.ac.ara.dtw0048.lyricscroller.view.CreateNewSetlistFragment"
+        android:label="fragment_create_new_setlist"
+        tools:layout="@layout/fragment_create_new_setlist" >
+        <action
+            android:id="@+id/action_createNewSetlistFragment_to_manageSetlistsFragment"
+            app:destination="@id/manageSetlistsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/setlistSongsFragment"
+        android:name="nz.ac.ara.dtw0048.lyricscroller.view.SetlistSongsFragment"
+        android:label="fragment_setlist_songs"
+        tools:layout="@layout/fragment_setlist_songs" >
+        <action
+            android:id="@+id/action_setlistSongsFragment_to_lyricFragment"
+            app:destination="@id/lyricFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editSongFragment"
+        android:name="nz.ac.ara.dtw0048.lyricscroller.view.EditSongFragment"
+        android:label="fragment_edit_song"
+        tools:layout="@layout/fragment_edit_song" />
 </navigation>

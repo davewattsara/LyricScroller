@@ -1,10 +1,17 @@
 package nz.ac.ara.dtw0048.lyricscroller.controller;
 
-import android.util.Log;
+import android.content.Context;
 
+import java.util.List;
+import java.util.Map;
+
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Single;
 import nz.ac.ara.dtw0048.lyricscroller.model.LyricScroller;
 import nz.ac.ara.dtw0048.lyricscroller.model.SearchResultListener;
-import nz.ac.ara.dtw0048.lyricscroller.model.SearchResult;
+import nz.ac.ara.dtw0048.lyricscroller.model.Setlist;
+import nz.ac.ara.dtw0048.lyricscroller.model.SetlistSong;
+import nz.ac.ara.dtw0048.lyricscroller.model.Song;
 
 public class Controller implements SearchResultListener {
 
@@ -36,12 +43,41 @@ public class Controller implements SearchResultListener {
         lyricScroller.getSearchResults(query);
     }
 
-    //public void getLyrics(int id) {
-    //    lyricScroller.getLyrics(id);
-    //}
+
+
+    public void openDatabase(Context context) {
+        lyricScroller.openDatabase(context);
+    }
+
+    public void closeDatabase() {
+        lyricScroller.closeDatabase();
+    }
+    public Completable addSong(Song song) {
+        return lyricScroller.addSong(song);
+    }
+
+    public Single<List<Song>> findByArtist(String artist) {
+        return lyricScroller.findByArtist(artist);
+    }
+
+    public Completable addSetlist(String setlistName) {
+        return lyricScroller.addSetlist(setlistName);
+    }
+
+    public Completable addSetlistSong(SetlistSong setlistSong) {
+        return lyricScroller.addSetlistSong(setlistSong);
+    }
+
+    public Single<List<Song>> getSetlistSongs(String setlistName) {
+        return lyricScroller.getSetlistSongs(setlistName);
+    }
+
+    public Single<Map<Setlist, List<Song>>> getSetlistsAndSongs() {
+        return lyricScroller.getSetlistsAndSongs();
+    }
 
     @Override
-    public void onSearchResultsFound(SearchResult result) {
+    public void onSearchResultsFound(Song result) {
         if (searchResultListener != null) {
             searchResultListener.onSearchResultsFound(result);
         }

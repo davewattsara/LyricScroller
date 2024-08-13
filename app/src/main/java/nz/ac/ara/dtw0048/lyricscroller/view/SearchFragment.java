@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +14,8 @@ import android.widget.EditText;
 
 import nz.ac.ara.dtw0048.lyricscroller.R;
 import nz.ac.ara.dtw0048.lyricscroller.controller.Controller;
-import nz.ac.ara.dtw0048.lyricscroller.model.SearchResult;
 import nz.ac.ara.dtw0048.lyricscroller.model.SearchResultListener;
+import nz.ac.ara.dtw0048.lyricscroller.model.Song;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,7 +61,7 @@ public class SearchFragment extends Fragment implements SearchResultListener {
     }
 
     @Override
-    public void onSearchResultsFound(SearchResult result) {
+    public void onSearchResultsFound(Song result) {
         Bundle args = new Bundle();
         args.putParcelable(LyricFragment.ARG_SEARCH_RESULT, result);
         Navigation.findNavController(view).navigate(R.id.action_searchFragment_to_lyricFragment, args);

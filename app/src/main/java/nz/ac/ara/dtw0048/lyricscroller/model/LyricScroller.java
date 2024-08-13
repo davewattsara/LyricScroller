@@ -1,65 +1,97 @@
 package nz.ac.ara.dtw0048.lyricscroller.model;
 
-import android.util.Log;
+import android.content.Context;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import androidx.room.Room;
 
-public class LyricScroller implements WebTask.WebTaskListener {
+import java.util.List;
+import java.util.Map;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+public class LyricScroller {
 
     private static final String HTTP_TYPE_SEARCH = "search";
     private static final String HTTP_TYPE_LYRIC = "lyric";
 
     private final SearchResultListener searchResultListener;
+    private LyricDatabase database;
 
     public LyricScroller(SearchResultListener listener) {
         this.searchResultListener = listener;
     }
 
     public void getSearchResults(String query) {
-        //String url = "https://api.genius.com/search?q=" + query;
-        //new HttpTask(this, HTTP_TYPE_SEARCH).execute(url);
-        new WebTask(this).execute(query);
+        //new WebTask(this).execute(query);
+        Single.create(new SearchWebTask(query))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new SingleObserver<Song>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {
+
+            }
+
+            @Override
+            public void onSuccess(@NonNull Song song) {
+                searchResultListener.onSearchResultsFound(song);
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+                searchResultListener.onSearchResultsFound(null);
+            }
+        });
     }
 
-    //public void getLyrics(int id) {
-    //    String url = "https://api.genius.com/songs/" + id;
-    //    new HttpTask(this, HTTP_TYPE_LYRIC).execute(url);
-    //}
 
-    @Override
-    public void onWebTaskResult(SearchResult result) {
-        /*
-        JSONObject json = result.getJsonObject();
-        try {
+    public void openDatabase(Context context) {
+        database = Room.inMemoryDatabaseBuilder(context, LyricDatabase.class).build();
+    }
 
-            switch (result.getType()) {
-                case HTTP_TYPE_SEARCH:
-                    Log.i("JSON_RESULT_SEARCH", json.toString(2));
-                    JSONArray hits = json.getJSONObject("response").getJSONArray("hits");
-                    int length = hits.length();
-                    SearchResult[] searchResults = new SearchResult[length];
-                    for (int i = 0; i < length; i++) {
-                        JSONObject thisHit = hits.getJSONObject(i).getJSONObject("result");
-                        searchResults[i] = new SearchResult(
-                                thisHit.getString("title"),
-                                thisHit.getString("artist_names"),
-                                thisHit.getInt("id")
-                        );
-                    }
-                    searchResultListener.onSearchResultsFound(searchResults);
-                    break;
-                case HTTP_TYPE_LYRIC:
-                    Log.i("JSON_RESULT_LYRIC", json.toString(2));
-                    break;
-            }
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
-         */
+    public void closeDatabase() {
+        database.close();
+    }
 
-        searchResultListener.onSearchResultsFound(result);
+    public Completable addSong(Song song) {
+        return database.songDao().insert(song)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Single<List<Song>> findByArtist(String artist) {
+        return database.songDao().findByArtist(artist)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Completable addSetlist(String setlistName) {
+        return database.setlistDao().insert(new Setlist(setlistName))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Completable addSetlistSong(SetlistSong setlistSong) {
+        return database.setlistSongDao().insert(setlistSong)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Single<List<Song>> getSetlistSongs(String setlistName) {
+        return database.setlistDao().findSongs(setlistName)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Single<Map<Setlist, List<Song>>> getSetlistsAndSongs() {
+        return database.setlistSongDao().setlistsWithSongs()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
     }
 }
