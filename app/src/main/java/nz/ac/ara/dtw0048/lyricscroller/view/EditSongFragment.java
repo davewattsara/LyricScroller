@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
@@ -13,14 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import io.reactivex.rxjava3.core.CompletableObserver;
+import io.reactivex.rxjava3.disposables.Disposable;
 import nz.ac.ara.dtw0048.lyricscroller.R;
+import nz.ac.ara.dtw0048.lyricscroller.controller.Controller;
 import nz.ac.ara.dtw0048.lyricscroller.model.Song;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link EditSongFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class EditSongFragment extends Fragment {
 
     public static final String ARG_SONG = "song";
@@ -72,8 +72,42 @@ public class EditSongFragment extends Fragment {
     }
 
     private void onSaveClicked(View v) {
-        String newSongName = songNameEditText.getText().toString();
-        String newArtistName = artistEditText.getText().toString();
+        Song newSong = new Song(
+                songNameEditText.getText().toString(),
+                artistEditText.getText().toString(),
+                lyricsEditText.getText().toString()
+        );
+        Controller controller = Controller.getInstance();
 
+        CompletableObserver observer = new CompletableObserver() {
+            @Override
+            public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {}
+            @Override
+            public void onComplete() {
+                Bundle args = new Bundle();
+                args.putParcelable(LyricFragment.ARG_SONG, newSong);
+                navController.navigate(
+                        R.id.action_editSongFragment_to_lyricFragment,
+                        args,
+                        new NavOptions.Builder()
+                                .setPopUpTo(R.id.lyricFragment, true)
+                                .build()
+                );
+            }
+            @Override
+            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                e.printStackTrace();
+            }
+        };
+
+        if (song != null) {
+            if (newSong.songName.equals(song.songName) && newSong.artistName.equals(song.artistName)) {
+                controller.updateSong(newSong).subscribe(observer);
+            }
+            else {
+                controller.renameAndUpdateSong(song.songName, song.artistName, newSong)
+                        .subscribe(observer);
+            }
+        }
     }
 }

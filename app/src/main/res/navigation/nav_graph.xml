@@ -79,5 +79,12 @@
         android:id="@+id/editSongFragment"
         android:name="nz.ac.ara.dtw0048.lyricscroller.view.EditSongFragment"
         android:label="fragment_edit_song"
-        tools:layout="@layout/fragment_edit_song" />
+        tools:layout="@layout/fragment_edit_song" >
+        <action
+            android:id="@+id/action_editSongFragment_to_lyricFragment"
+            app:destination="@id/lyricFragment" />
+        <action
+            android:id="@+id/action_editSongFragment_to_setlistSongsFragment"
+            app:destination="@id/setlistSongsFragment" />
+    </fragment>
 </navigation>

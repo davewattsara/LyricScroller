@@ -92,7 +92,7 @@ public class SetlistSongsFragment extends Fragment implements SongOnClickListene
     @Override
     public void onSongClicked(Song song) {
         Bundle args = new Bundle();
-        args.putParcelable(LyricFragment.ARG_SEARCH_RESULT, song);
+        args.putParcelable(LyricFragment.ARG_SONG, song);
         navController.navigate(R.id.action_setlistSongsFragment_to_lyricFragment, args);
     }
 }

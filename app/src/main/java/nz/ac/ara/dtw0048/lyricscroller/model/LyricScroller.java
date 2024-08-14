@@ -4,12 +4,14 @@ import android.content.Context;
 
 import androidx.room.Room;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -65,8 +67,20 @@ public class LyricScroller {
                 .subscribeOn(Schedulers.io());
     }
 
+    public Completable updateSong(Song song) {
+        return database.songDao().update(song)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
     public Single<List<Song>> findByArtist(String artist) {
         return database.songDao().findByArtist(artist)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Single<Song> findSong(String songName, String artist) {
+        return database.songDao().findSong(songName, artist)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }
@@ -90,7 +104,34 @@ public class LyricScroller {
     }
 
     public Single<Map<Setlist, List<Song>>> getSetlistsAndSongs() {
-        return database.setlistSongDao().setlistsWithSongs()
+        return database.setlistSongDao().setlistsAndSongs()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Completable deleteSong(String songName, String artistName) {
+        return Completable.mergeArray(
+                database.songDao().delete(songName, artistName),
+                database.setlistSongDao().deleteSong(songName, artistName)
+        )
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Completable renameAndUpdateSong(String oldSongName, String oldArtist, Song newSong) {
+        return database.setlistSongDao().findBySong(oldSongName, oldArtist).flatMapCompletable(setlistSongs -> {
+            ArrayList<SetlistSong> newSetlistSongs = new ArrayList<>();
+            for(SetlistSong setlistSong : setlistSongs) {
+                newSetlistSongs.add(new SetlistSong(newSong.songName,
+                        newSong.artistName, setlistSong.setlistName));
+            }
+            return Completable.mergeArray(
+                    database.songDao().delete(oldSongName, oldArtist),
+                    database.setlistSongDao().delete(setlistSongs),
+                    database.setlistSongDao().insert(newSetlistSongs),
+                    database.songDao().insert(newSong)
+            );
+        })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }

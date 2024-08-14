@@ -5,6 +5,8 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -12,20 +14,27 @@ import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 
 @Dao
-public interface SongDao {
+public abstract class SongDao {
     @Query("SELECT * FROM Song")
-    Single<List<Song>> getAll();
+    public abstract Single<List<Song>> getAll();
 
     @Query("SELECT * FROM Song WHERE artist_name LIKE :artist")
-    Single<List<Song>> findByArtist(String artist);
+    public abstract Single<List<Song>> findByArtist(String artist);
 
-    @Query("SELECT * FROM Song WHERE artist_name LIKE :artist AND song_name LIKE :title LIMIT 1")
-    Single<Song> findSong(String artist, String title);
+    @Query("SELECT * FROM Song WHERE artist_name = :artist AND song_name = :songName LIMIT 1")
+    public abstract Single<Song> findSong(String songName, String artist);
+
+    @Query("SELECT * FROM setlist" +
+            " INNER JOIN setlistsong ON setlistsong.setlist_name = setlist.setlist_name" +
+            " WHERE setlistsong.song_name = :songName AND setlistsong.artist_name = :artistName")
+    public abstract Single<List<Setlist>> findSetlists(String songName, String artistName);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    Completable insert(Song song);
+    public abstract Completable insert(Song song);
 
-    @Delete
-    Completable delete(Song song);
+    @Update
+    public abstract Completable update(Song song);
 
+    @Query("DELETE FROM song WHERE song_name = :songName AND artist_name = :artistName")
+    public abstract Completable delete(String songName, String artistName);
 }

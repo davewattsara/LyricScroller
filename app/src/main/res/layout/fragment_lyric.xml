@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".view.LyricFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <ScrollView
         android:id="@+id/lyricScrollView"
         android:layout_width="match_parent"

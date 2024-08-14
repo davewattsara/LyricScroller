@@ -27,8 +27,8 @@ public interface SetlistDao {
     Single<List<Song>> findSongs(String setlistName);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    Completable insert(Setlist setlist);
+    Completable insert(Setlist... setlists);
 
     @Delete
-    Completable delete(Setlist setlist);
+    Completable delete(Setlist... setlists);
 }

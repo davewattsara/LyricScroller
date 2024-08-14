@@ -1,6 +1,5 @@
 package nz.ac.ara.dtw0048.lyricscroller.view;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,7 +9,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.os.Handler;
-import android.os.Parcel;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +40,7 @@ import nz.ac.ara.dtw0048.lyricscroller.model.Song;
  */
 public class LyricFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
-    public static final String ARG_SEARCH_RESULT = "search_result";
+    public static final String ARG_SONG = "song";
 
     private static final double DELTA_TIME = 0.01;
     private static final double MIN_SONG_DURATION = 30.0;
@@ -50,7 +48,7 @@ public class LyricFragment extends Fragment implements AdapterView.OnItemSelecte
     private static final float MIN_TEXT_SIZE = 10.0f;
     private static final float MAX_TEXT_SIZE = 40.0f;
 
-    private Song searchResult;
+    private Song song;
     private ScrollView scrollView;
     private double scrollPosition = 0.0;
     private double scrollDuration = MIN_SONG_DURATION;
@@ -88,7 +86,7 @@ public class LyricFragment extends Fragment implements AdapterView.OnItemSelecte
     public static LyricFragment newInstance(Song searchResult) {
         LyricFragment fragment = new LyricFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_SEARCH_RESULT, searchResult);
+        args.putParcelable(ARG_SONG, searchResult);
         fragment.setArguments(args);
         return fragment;
     }
@@ -97,7 +95,7 @@ public class LyricFragment extends Fragment implements AdapterView.OnItemSelecte
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            searchResult = getArguments().getParcelable(ARG_SEARCH_RESULT);
+            song = getArguments().getParcelable(ARG_SONG);
         }
     }
 
@@ -130,12 +128,12 @@ public class LyricFragment extends Fragment implements AdapterView.OnItemSelecte
         lyricsTextView = view.findViewById(R.id.lyricTextView);
         titleTextView = view.findViewById(R.id.songTitleTextView);
         artistTextView = view.findViewById(R.id.artistTextView);
-        if (searchResult == null)
+        if (song == null)
             lyricsTextView.setText(getString(R.string.no_lyrics));
         else {
-            lyricsTextView.setText(searchResult.lyrics);
-            titleTextView.setText(searchResult.songName);
-            artistTextView.setText(searchResult.artistName);
+            lyricsTextView.setText(song.lyrics);
+            titleTextView.setText(song.songName);
+            artistTextView.setText(song.artistName);
         }
         setTextSize(fontSizeSlider.getValue());
         AdapterView.OnItemSelectedListener listener = this;
@@ -151,7 +149,7 @@ public class LyricFragment extends Fragment implements AdapterView.OnItemSelecte
                 List<Setlist> setlistsWithoutSong = new ArrayList<Setlist>(setlistsAndSongs.keySet());
                 for (int i = 0; i < setlistsWithoutSong.size(); i++) {
                     List<Song> songs = setlistsAndSongs.get(setlistsWithoutSong.get(i));
-                    if (songs != null && songs.contains(searchResult)) {
+                    if (songs != null && songs.contains(song)) {
                         setlistsWithoutSong.remove(i);
                         i--;
                     }
@@ -197,7 +195,7 @@ public class LyricFragment extends Fragment implements AdapterView.OnItemSelecte
 
     private void onEditClicked(View v) {
         Bundle args = new Bundle();
-        args.putParcelable(EditSongFragment.ARG_SONG, searchResult);
+        args.putParcelable(EditSongFragment.ARG_SONG, song);
         navController.navigate(R.id.action_lyricFragment_to_editSongFragment, args);
     }
 
@@ -206,8 +204,8 @@ public class LyricFragment extends Fragment implements AdapterView.OnItemSelecte
         if (position > 0) {
             Controller controller = Controller.getInstance();
             Setlist setlist = (Setlist) parent.getItemAtPosition(position);
-            SetlistSong setlistSong = new SetlistSong(searchResult.songName, searchResult.artistName, setlist.setlistName);
-            controller.addSong(searchResult)
+            SetlistSong setlistSong = new SetlistSong(song.songName, song.artistName, setlist.setlistName);
+            controller.addSong(song)
                     .andThen(controller.addSetlistSong(setlistSong))
                     .subscribe(new CompletableObserver() {
                         @Override
