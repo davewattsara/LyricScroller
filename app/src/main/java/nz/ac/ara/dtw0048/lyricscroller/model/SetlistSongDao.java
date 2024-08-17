@@ -19,12 +19,17 @@ public interface SetlistSongDao {
     @Query("SELECT * FROM setlist" +
             " LEFT JOIN setlistsong ON setlistsong.setlist_name = setlist.setlist_name" +
             " LEFT JOIN song ON song.song_name = setlistsong.song_name " +
-            " AND song.artist_name = setlistsong.artist_name")
+            " AND song.artist_name = setlistsong.artist_name" +
+            " ORDER BY setlist_name, song_name")
     Single<Map<Setlist, List<Song>>> setlistsAndSongs();
 
     @Query("SELECT * FROM setlistsong" +
-            " WHERE song_name LIKE :songName AND artist_name LIKE :artistName")
+            " WHERE song_name = :songName AND artist_name = :artistName")
     Single<List<SetlistSong>> findBySong(String songName, String artistName);
+
+    @Query("SELECT * FROM setlistsong" +
+            " WHERE setlist_name = :setlistName")
+    Single<List<SetlistSong>> findBySetlist(String setlistName);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     Completable insert(SetlistSong... setlistSongs);

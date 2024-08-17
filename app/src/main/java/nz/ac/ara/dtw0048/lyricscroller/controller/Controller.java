@@ -68,6 +68,10 @@ public class Controller implements SearchResultListener {
         return lyricScroller.renameAndUpdateSong(oldSongName, oldArtist, song);
     }
 
+    public Completable renameSetlist(Setlist oldSetlist, Setlist newSetlist) {
+        return lyricScroller.renameSetlist(oldSetlist, newSetlist);
+    }
+
     public Single<List<Song>> findByArtist(String artist) {
         return lyricScroller.findByArtist(artist);
     }
@@ -78,6 +82,10 @@ public class Controller implements SearchResultListener {
 
     public Completable addSetlistSong(SetlistSong setlistSong) {
         return lyricScroller.addSetlistSong(setlistSong);
+    }
+
+    public Completable deleteSetlistSong(SetlistSong setlistSong) {
+        return lyricScroller.deleteSetlistSong(setlistSong);
     }
 
     public Single<List<Song>> getSetlistSongs(String setlistName) {

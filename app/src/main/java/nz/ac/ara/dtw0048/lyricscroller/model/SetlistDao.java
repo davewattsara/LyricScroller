@@ -23,7 +23,8 @@ public interface SetlistDao {
     @Query("SELECT * FROM song" +
             " INNER JOIN setlistsong ON song.song_name = setlistsong.song_name" +
             " AND song.artist_name = setlistsong.artist_name" +
-            " WHERE setlistsong.setlist_name LIKE :setlistName" )
+            " WHERE setlistsong.setlist_name LIKE :setlistName" +
+            " ORDER BY song.song_name")
     Single<List<Song>> findSongs(String setlistName);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

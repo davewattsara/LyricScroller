@@ -13,11 +13,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import io.reactivex.rxjava3.core.CompletableObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import nz.ac.ara.dtw0048.lyricscroller.R;
 import nz.ac.ara.dtw0048.lyricscroller.controller.Controller;
+import nz.ac.ara.dtw0048.lyricscroller.model.BlankNameException;
+import nz.ac.ara.dtw0048.lyricscroller.model.DuplicateNameException;
 import nz.ac.ara.dtw0048.lyricscroller.model.Song;
 
 
@@ -96,7 +99,13 @@ public class EditSongFragment extends Fragment {
             }
             @Override
             public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                e.printStackTrace();
+                if (e instanceof BlankNameException) {
+                    Toast.makeText(getContext(), "Song name or artist name cannot be blank.", Toast.LENGTH_LONG)
+                            .show();
+                } else if (e instanceof DuplicateNameException) {
+                    Toast.makeText(getContext(), "Song with that name by that artist already exists.", Toast.LENGTH_LONG)
+                            .show();
+                }
             }
         };
 

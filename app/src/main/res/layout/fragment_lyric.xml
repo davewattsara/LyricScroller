@@ -95,14 +95,11 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Spinner
-                    android:id="@+id/setlistSpinner"
-                    android:layout_width="0dp"
+                <Button
+                    android:id="@+id/addToSetlistButton"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:prompt="@string/add_to_setlist"
-                    android:spinnerMode="dialog"
+                    android:text="Add to Setlist"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/editButton"
                     app:layout_constraintStart_toEndOf="@+id/playButton"

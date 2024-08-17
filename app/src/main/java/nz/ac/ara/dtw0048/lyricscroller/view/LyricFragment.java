@@ -5,10 +5,13 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +26,7 @@ import com.google.android.material.slider.Slider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.reactivex.rxjava3.core.CompletableObserver;
 import io.reactivex.rxjava3.core.SingleObserver;
@@ -38,9 +42,12 @@ import nz.ac.ara.dtw0048.lyricscroller.model.Song;
  * Use the {@link LyricFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LyricFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+public class LyricFragment extends Fragment
+        implements AdapterView.OnItemSelectedListener {
 
+    public static final String REQUEST_KEY = LyricFragment.class.getSimpleName();
     public static final String ARG_SONG = "song";
+    public static final String ARG_CHECKED_SETLISTS = "checked_setlists";
 
     private static final double DELTA_TIME = 0.01;
     private static final double MIN_SONG_DURATION = 30.0;
@@ -59,6 +66,7 @@ public class LyricFragment extends Fragment implements AdapterView.OnItemSelecte
     private boolean isScrolling = false;
     private boolean isUpdatingScroll = false;
     private NavController navController;
+    private Map<Setlist, List<Song>> setlistsAndSongs;
 
 
     private final Runnable processScroll = new Runnable() {
@@ -96,6 +104,13 @@ public class LyricFragment extends Fragment implements AdapterView.OnItemSelecte
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             song = getArguments().getParcelable(ARG_SONG);
+        }
+        FragmentActivity activity = getActivity();
+        if (activity != null) {
+            activity.getSupportFragmentManager().setFragmentResultListener(
+                    REQUEST_KEY, this, (requestKey, bundle) -> {
+                        onSetlistChecklistOkClicked(bundle.getParcelableArrayList(ARG_CHECKED_SETLISTS));
+                    });
         }
     }
 
@@ -145,19 +160,15 @@ public class LyricFragment extends Fragment implements AdapterView.OnItemSelecte
             }
 
             @Override
-            public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull Map<Setlist, List<Song>> setlistsAndSongs) {
-                List<Setlist> setlistsWithoutSong = new ArrayList<Setlist>(setlistsAndSongs.keySet());
-                for (int i = 0; i < setlistsWithoutSong.size(); i++) {
-                    List<Song> songs = setlistsAndSongs.get(setlistsWithoutSong.get(i));
-                    if (songs != null && songs.contains(song)) {
-                        setlistsWithoutSong.remove(i);
-                        i--;
+            public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull Map<Setlist, List<Song>> setlistsAndSongsResult) {
+                setlistsAndSongs = setlistsAndSongsResult;
+                view.findViewById(R.id.addToSetlistButton).setOnClickListener((v) -> {
+                    FragmentActivity activity = getActivity();
+                    if (activity != null) {
+                        SetlistChecklistDialogFragment.newInstance(setlistsAndSongs, song)
+                                .show(activity.getSupportFragmentManager(), "SetlistChecklistDialogFragment");
                     }
-                }
-                setlistsWithoutSong.add(0, new Setlist("Add to setlist..."));
-                Spinner spinner = view.findViewById(R.id.setlistSpinner);
-                spinner.setAdapter(new SetlistSpinnerAdapter(getContext(), setlistsWithoutSong));
-                spinner.setOnItemSelectedListener(listener);
+                });
             }
 
             @Override
@@ -230,5 +241,24 @@ public class LyricFragment extends Fragment implements AdapterView.OnItemSelecte
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    public void onSetlistChecklistOkClicked(List<Setlist> checkedSetlists) {
+        Log.i("LyricFragment", "onSetlistChecklistOkClicked");
+        for (Setlist setlist : setlistsAndSongs.keySet()) {
+            List<Song> songs = setlistsAndSongs.get(setlist);
+            Controller controller = Controller.getInstance();
+
+            SetlistSong setlistSong = new SetlistSong(song.songName, song.artistName, setlist.setlistName);
+            if (songs != null && songs.contains(song) && !checkedSetlists.contains(setlist)) {
+                // Remove song
+                controller.deleteSetlistSong(setlistSong).subscribe();
+                Objects.requireNonNull(setlistsAndSongs.get(setlist)).remove(song);
+            } else if ((songs == null || !songs.contains(song)) && checkedSetlists.contains(setlist)) {
+                // Add song
+                controller.addSetlistSong(setlistSong).subscribe();
+                Objects.requireNonNull(setlistsAndSongs.get(setlist)).add(song);
+            }
+        }
     }
 }
