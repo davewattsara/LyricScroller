@@ -1,6 +1,7 @@
 package nz.ac.ara.dtw0048.lyricscroller.view;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -78,15 +79,13 @@ public class SetlistSongsFragment extends Fragment implements SongOnClickListene
     public void onViewCreated(@androidx.annotation.NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Set the setlist title text
         TextView setlistNameTextView = view.findViewById(R.id.setlistNameTextView);
         setlistNameTextView.setText(setlistName);
-        view.findViewById(R.id.renameSetlistButton).setOnClickListener((v) -> {
-            FragmentActivity activity = getActivity();
-            if (activity != null) {
-                RenameDialogFragment.newInstance("Rename Setlist", setlistName, RENAME_SETLIST_REQUEST_KEY)
-                        .show(activity.getSupportFragmentManager(), "RenameDialogFragment");
-            }
-        });
+
+        // Setup button listeners
+        view.findViewById(R.id.renameSetlistButton).setOnClickListener(this::onRenameSetlistClicked);
+        view.findViewById(R.id.deleteSetlistButton).setOnClickListener(this::onDeleteSetlistClicked);
 
         navController = Navigation.findNavController(view);
         SongOnClickListener listener = this;
@@ -128,6 +127,40 @@ public class SetlistSongsFragment extends Fragment implements SongOnClickListene
         Bundle args = new Bundle();
         args.putParcelable(LyricFragment.ARG_SONG, song);
         navController.navigate(R.id.action_setlistSongsFragment_to_lyricFragment, args);
+    }
+
+    private void onDeleteSetlistClicked(View v) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Are you sure you want to delete this setlist?")
+                .setMessage("All songs in this setlist that aren't in another setlist will be deleted also.")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    Controller.getInstance().deleteSetlist(setlistName).subscribe(new CompletableObserver() {
+                        @Override
+                        public void onSubscribe(@NonNull Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            navController.popBackStack();
+                        }
+
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+
+                        }
+                    });
+                })
+                .setNegativeButton("Cancel", null)
+                .create().show();
+    }
+
+    private void onRenameSetlistClicked(View v) {
+        FragmentActivity activity = getActivity();
+        if (activity != null) {
+            RenameDialogFragment.newInstance("Rename Setlist", setlistName, RENAME_SETLIST_REQUEST_KEY)
+                    .show(activity.getSupportFragmentManager(), "RenameDialogFragment");
+        }
     }
 
     private void renameSetlist(View view, String newSetlistName) {

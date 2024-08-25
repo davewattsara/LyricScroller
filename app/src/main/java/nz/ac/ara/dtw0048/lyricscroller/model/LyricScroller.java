@@ -123,24 +123,6 @@ public class LyricScroller {
                 .subscribeOn(Schedulers.io());
     }
 
-    public Completable renameAndUpdateSongOld(String oldSongName, String oldArtist, Song newSong) {
-        return database.setlistSongDao().findBySong(oldSongName, oldArtist).flatMapCompletable(setlistSongs -> {
-            ArrayList<SetlistSong> newSetlistSongs = new ArrayList<>();
-            for (SetlistSong setlistSong : setlistSongs) {
-                newSetlistSongs.add(new SetlistSong(newSong.songName,
-                        newSong.artistName, setlistSong.setlistName));
-            }
-            return Completable.mergeArray(
-                    database.songDao().delete(oldSongName, oldArtist),
-                    database.setlistSongDao().delete(setlistSongs),
-                    database.setlistSongDao().insert(newSetlistSongs),
-                    database.songDao().insert(newSong)
-            );
-        })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
-    }
-
     public Completable renameAndUpdateSong(String oldSongName, String oldArtist, Song newSong) {
         if (newSong.songName.trim().equals("") || newSong.artistName.trim().equals(""))
             return Completable.error(new BlankNameException());
@@ -185,6 +167,17 @@ public class LyricScroller {
                 );
             });
         })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Completable deleteSetlist(String setlistName) {
+        return Completable.mergeArray(
+                database.setlistDao().delete(new Setlist(setlistName)),
+                database.setlistSongDao().deleteSetlist(setlistName)
+        ).andThen(
+                database.songDao().deleteSongsNotInAnySetlist()
+        )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }

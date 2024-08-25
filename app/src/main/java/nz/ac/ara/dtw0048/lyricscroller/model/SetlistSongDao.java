@@ -43,4 +43,7 @@ public interface SetlistSongDao {
 
     @Query("DELETE FROM setlistsong WHERE song_name = :songName AND artist_name = :artistName")
     Completable deleteSong(String songName, String artistName);
+
+    @Query("DELETE FROM setlistsong WHERE setlist_name = :setlistName")
+    Completable deleteSetlist(String setlistName);
 }

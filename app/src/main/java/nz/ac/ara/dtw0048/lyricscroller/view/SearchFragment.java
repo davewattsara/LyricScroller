@@ -57,6 +57,7 @@ public class SearchFragment extends Fragment implements SearchResultListener {
         view.findViewById(R.id.searchButton2).setOnClickListener((v) -> {
             EditText queryEdit = view.findViewById(R.id.searchQueryEditText);
             controller.searchForLyrics(queryEdit.getText().toString());
+            view.findViewById(R.id.searchProgressBar).setVisibility(View.VISIBLE);
         });
     }
 

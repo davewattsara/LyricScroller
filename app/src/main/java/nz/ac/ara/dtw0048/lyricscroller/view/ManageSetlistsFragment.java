@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +37,7 @@ public class ManageSetlistsFragment extends Fragment implements SetlistOnClickLi
     public static final String ARG_NEW_SETLIST_NAME = "new_setlist_name";
 
     private String newSetlistName;
+    private NavController navController;
 
     public ManageSetlistsFragment() {
         // Required empty public constructor
@@ -69,6 +71,7 @@ public class ManageSetlistsFragment extends Fragment implements SetlistOnClickLi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Controller controller = Controller.getInstance();
         SetlistOnClickListener listener = this;
+        navController = Navigation.findNavController(view);
         SingleObserver<Map<Setlist, List<Song>>> observer = new SingleObserver<Map<Setlist, List<Song>>>() {
             @Override
             public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
@@ -101,12 +104,14 @@ public class ManageSetlistsFragment extends Fragment implements SetlistOnClickLi
         }
 
         view.findViewById(R.id.createSetlistButton).setOnClickListener((v) -> {
-            Navigation.findNavController(view).navigate(R.id.action_manageSetlistsFragment_to_createNewSetlistFragment);
+            navController.navigate(R.id.action_manageSetlistsFragment_to_createNewSetlistFragment);
         });
     }
 
     @Override
     public void onSetlistClicked(Setlist setlist) {
-
+        Bundle args = new Bundle();
+        args.putString(SetlistSongsFragment.ARG_SETLIST_NAME, setlist.setlistName);
+        navController.navigate(R.id.action_manageSetlistsFragment_to_setlistSongsFragment, args);
     }
 }

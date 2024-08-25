@@ -56,6 +56,9 @@
         <action
             android:id="@+id/action_manageSetlistsFragment_to_createNewSetlistFragment"
             app:destination="@id/createNewSetlistFragment" />
+        <action
+            android:id="@+id/action_manageSetlistsFragment_to_setlistSongsFragment"
+            app:destination="@id/setlistSongsFragment" />
     </fragment>
     <fragment
         android:id="@+id/createNewSetlistFragment"

@@ -10,6 +10,9 @@ import androidx.room.Entity;
 
 @Entity(primaryKeys = {"song_name", "artist_name"})
 public class Song implements Parcelable {
+
+    private static final float DEFAULT_SCROLL_SPEED = 0.5f;
+
     @ColumnInfo(name = "song_name")
     @NonNull
     public String songName;
@@ -21,10 +24,14 @@ public class Song implements Parcelable {
     @ColumnInfo(name = "lyrics")
     public String lyrics;
 
+    @ColumnInfo(name = "scroll_speed")
+    public float scrollSpeed;
+
     public Song (@NonNull String songName, @NonNull String artistName, String lyrics) {
         this.songName = songName;
         this.artistName = artistName;
         this.lyrics = lyrics;
+        this.scrollSpeed = DEFAULT_SCROLL_SPEED;
     }
 
     private Song(Parcel parcel) {
@@ -33,6 +40,7 @@ public class Song implements Parcelable {
         String artistName = parcel.readString();
         this.artistName = artistName == null ? "" : artistName;
         lyrics = parcel.readString();
+        scrollSpeed = parcel.readFloat();
     }
 
     @Override
@@ -45,6 +53,7 @@ public class Song implements Parcelable {
         dest.writeString(songName);
         dest.writeString(artistName);
         dest.writeString(lyrics);
+        dest.writeFloat(scrollSpeed);
     }
 
     public static final Creator<Song> CREATOR = new Creator<Song>() {

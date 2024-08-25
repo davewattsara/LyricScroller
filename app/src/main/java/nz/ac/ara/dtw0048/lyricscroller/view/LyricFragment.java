@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -17,13 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.slider.Slider;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,11 +34,6 @@ import nz.ac.ara.dtw0048.lyricscroller.model.Setlist;
 import nz.ac.ara.dtw0048.lyricscroller.model.SetlistSong;
 import nz.ac.ara.dtw0048.lyricscroller.model.Song;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LyricFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class LyricFragment extends Fragment
         implements AdapterView.OnItemSelectedListener {
 
@@ -91,14 +83,6 @@ public class LyricFragment extends Fragment
         // Required empty public constructor
     }
 
-    public static LyricFragment newInstance(Song searchResult) {
-        LyricFragment fragment = new LyricFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_SONG, searchResult);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,9 +117,6 @@ public class LyricFragment extends Fragment
         scrollHandler = new Handler();
         view.findViewById(R.id.playButton).setOnClickListener(this::onPlayClicked);
         view.findViewById(R.id.editButton).setOnClickListener(this::onEditClicked);
-        Slider scrollSpeedSlider = view.findViewById(R.id.scrollSpeedSlider);
-        setScrollDuration(scrollSpeedSlider.getValue());
-        scrollSpeedSlider.addOnChangeListener((slider, value, fromUser) -> setScrollDuration(value));
 
         Slider fontSizeSlider = view.findViewById(R.id.fontSizeSlider);
         fontSizeSlider.addOnChangeListener((slider, value, fromUser) -> setTextSize(value));
@@ -149,9 +130,14 @@ public class LyricFragment extends Fragment
             lyricsTextView.setText(song.lyrics);
             titleTextView.setText(song.songName);
             artistTextView.setText(song.artistName);
+
+            Slider scrollSpeedSlider = view.findViewById(R.id.scrollSpeedSlider);
+            setScrollDuration(song.scrollSpeed);
+            scrollSpeedSlider.setValue(song.scrollSpeed);
+            Log.i("LyricFragment", "onViewCreated song.scrollSpeed = " + song.scrollSpeed);
+            scrollSpeedSlider.addOnChangeListener((slider, value, fromUser) -> setScrollDuration(value));
         }
         setTextSize(fontSizeSlider.getValue());
-        AdapterView.OnItemSelectedListener listener = this;
 
         Controller.getInstance().getSetlistsAndSongs().subscribe(new SingleObserver<Map<Setlist, List<Song>>>() {
             @Override
@@ -188,6 +174,7 @@ public class LyricFragment extends Fragment
     }
 
     private void setScrollDuration(float sliderValue) {
+        song.scrollSpeed = sliderValue;
         scrollDuration = MIN_SONG_DURATION + (MAX_SONG_DURATION - MIN_SONG_DURATION) * (1 - sliderValue);
     }
 
@@ -245,9 +232,17 @@ public class LyricFragment extends Fragment
 
     public void onSetlistChecklistOkClicked(List<Setlist> checkedSetlists) {
         Log.i("LyricFragment", "onSetlistChecklistOkClicked");
+        if (song == null)
+            return;
         for (Setlist setlist : setlistsAndSongs.keySet()) {
             List<Song> songs = setlistsAndSongs.get(setlist);
             Controller controller = Controller.getInstance();
+
+            if (checkedSetlists.size() > 0)
+                controller.addSong(song).subscribe();
+            else
+                controller.deleteSong(song.songName, song.artistName).subscribe();
+
 
             SetlistSong setlistSong = new SetlistSong(song.songName, song.artistName, setlist.setlistName);
             if (songs != null && songs.contains(song) && !checkedSetlists.contains(setlist)) {
@@ -260,5 +255,14 @@ public class LyricFragment extends Fragment
                 Objects.requireNonNull(setlistsAndSongs.get(setlist)).add(song);
             }
         }
+    }
+
+    @Override
+    public void onStop() {
+        if (song != null) {
+            Log.i("LyricFragment", "onStop song.scrollSpeed = " + song.scrollSpeed);
+            Controller.getInstance().updateSong(song).subscribe();
+        }
+        super.onStop();
     }
 }

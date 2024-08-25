@@ -64,6 +64,10 @@ public class Controller implements SearchResultListener {
         return lyricScroller.updateSong(song);
     }
 
+    public Completable deleteSong(String songName, String artist) {
+        return lyricScroller.deleteSong(songName, artist);
+    }
+
     public Completable renameAndUpdateSong(String oldSongName, String oldArtist, Song song) {
         return lyricScroller.renameAndUpdateSong(oldSongName, oldArtist, song);
     }
@@ -94,6 +98,10 @@ public class Controller implements SearchResultListener {
 
     public Single<Map<Setlist, List<Song>>> getSetlistsAndSongs() {
         return lyricScroller.getSetlistsAndSongs();
+    }
+
+    public Completable deleteSetlist(String setlistName) {
+        return lyricScroller.deleteSetlist(setlistName);
     }
 
     @Override

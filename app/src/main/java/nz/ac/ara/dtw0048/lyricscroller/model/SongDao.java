@@ -32,9 +32,15 @@ public abstract class SongDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract Completable insert(Song song);
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     public abstract Completable update(Song song);
 
     @Query("DELETE FROM song WHERE song_name = :songName AND artist_name = :artistName")
     public abstract Completable delete(String songName, String artistName);
+
+    @Query("DELETE FROM song WHERE NOT EXISTS (" +
+            " SELECT song_name, artist_name FROM setlistsong" +
+            " WHERE setlistsong.song_name = song.song_name" +
+            " AND setlistsong.artist_name = song.artist_name)")
+    public abstract Completable deleteSongsNotInAnySetlist();
 }
