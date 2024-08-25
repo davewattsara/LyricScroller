@@ -155,6 +155,23 @@ public class LyricFragment extends Fragment
                                 .show(activity.getSupportFragmentManager(), "SetlistChecklistDialogFragment");
                     }
                 });
+
+                // Show the setlist dialog if this song doesn't belong to a setlist
+                boolean shouldShowDialog = true;
+                for (Setlist setlist : setlistsAndSongs.keySet()) {
+                    List<Song> songs = setlistsAndSongs.get(setlist);
+                    if (songs != null && songs.contains(song)) {
+                        shouldShowDialog = false;
+                        break;
+                    }
+                }
+                if (shouldShowDialog) {
+                    FragmentActivity activity = getActivity();
+                    if (activity != null) {
+                        SetlistChecklistDialogFragment.newInstance(setlistsAndSongs, song)
+                                .show(activity.getSupportFragmentManager(), "SetlistChecklistDialogFragment");
+                    }
+                }
             }
 
             @Override

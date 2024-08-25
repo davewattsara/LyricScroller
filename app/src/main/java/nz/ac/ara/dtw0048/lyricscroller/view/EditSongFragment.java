@@ -1,5 +1,6 @@
 package nz.ac.ara.dtw0048.lyricscroller.view;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -114,8 +115,23 @@ public class EditSongFragment extends Fragment {
                 controller.updateSong(newSong).subscribe(observer);
             }
             else {
-                controller.renameAndUpdateSong(song.songName, song.artistName, newSong)
-                        .subscribe(observer);
+                // Song name has changed
+                // Either rename the song or save it as a new copy
+                new AlertDialog.Builder(getContext())
+                        .setMessage("Do you want to rename the song or create a copy?")
+                        .setPositiveButton("Rename", (dialog, which) -> {
+                            controller.renameAndUpdateSong(song.songName, song.artistName, newSong)
+                                    .subscribe(observer);
+                        })
+                        .setNegativeButton("Make a Copy", (dialog, which) -> {
+                            controller.addSong(newSong)
+                                    .subscribe(observer);
+                        })
+                        .create().show();
+
+                //controller.renameAndUpdateSong(song.songName, song.artistName, newSong)
+                //        .subscribe(observer);
+
             }
         }
     }
