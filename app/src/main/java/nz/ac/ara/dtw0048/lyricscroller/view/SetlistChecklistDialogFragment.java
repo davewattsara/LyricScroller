@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.Navigation;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ public class SetlistChecklistDialogFragment extends DialogFragment {
 
     private static final String ARG_ALL_SETLISTS = "all_setlists";
     private static final String ARG_CHECKED_SETLISTS = "checked_setlists";
+    public static final String REQUEST_KEY_OK = "SetlistChecklistDialogFragment_request_ok";
+    public static final String REQUEST_KEY_MANAGE_SETLISTS = "SetlistChecklistDialogFragment_request_manage_setlists";
     private Setlist[] allSetlists;
     private boolean[] checkedSetlists;
 
@@ -68,10 +71,17 @@ public class SetlistChecklistDialogFragment extends DialogFragment {
                         Bundle resultArgs = new Bundle();
                         resultArgs.putParcelableArrayList(LyricFragment.ARG_CHECKED_SETLISTS, result);
                         activity.getSupportFragmentManager()
-                                .setFragmentResult(LyricFragment.REQUEST_KEY, resultArgs);
+                                .setFragmentResult(REQUEST_KEY_OK, resultArgs);
                     }
                 })
-                .setNegativeButton("Cancel", null);
+                .setNegativeButton("Cancel", null)
+                .setNeutralButton("Manage Setlists", ((dialog, which) -> {
+                    FragmentActivity activity = getActivity();
+                    if (activity != null) {
+                        activity.getSupportFragmentManager()
+                                .setFragmentResult(REQUEST_KEY_MANAGE_SETLISTS, new Bundle());
+                    }
+                }));
         return builder.create();
     }
 }

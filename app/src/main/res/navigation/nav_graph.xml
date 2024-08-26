@@ -42,6 +42,9 @@
         <action
             android:id="@+id/action_lyricFragment_to_editSongFragment"
             app:destination="@id/editSongFragment" />
+        <action
+            android:id="@+id/action_lyricFragment_to_manageSetlistsFragment"
+            app:destination="@id/manageSetlistsFragment" />
     </fragment>
     <fragment
         android:id="@+id/addToSetlistFragment"

@@ -37,11 +37,10 @@ import nz.ac.ara.dtw0048.lyricscroller.model.Song;
 public class LyricFragment extends Fragment
         implements AdapterView.OnItemSelectedListener {
 
-    public static final String REQUEST_KEY = LyricFragment.class.getSimpleName();
     public static final String ARG_SONG = "song";
     public static final String ARG_CHECKED_SETLISTS = "checked_setlists";
 
-    private static final double DELTA_TIME = 0.01;
+    private static final double DELTA_TIME = 0.025;
     private static final double MIN_SONG_DURATION = 30.0;
     private static final double MAX_SONG_DURATION = 600.0;
     private static final float MIN_TEXT_SIZE = 10.0f;
@@ -86,14 +85,24 @@ public class LyricFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        song = null;
+        if (savedInstanceState != null) {
+            song = savedInstanceState.getParcelable(ARG_SONG);
+        }
+        if (song == null && getArguments() != null) {
             song = getArguments().getParcelable(ARG_SONG);
         }
         FragmentActivity activity = getActivity();
         if (activity != null) {
             activity.getSupportFragmentManager().setFragmentResultListener(
-                    REQUEST_KEY, this, (requestKey, bundle) -> {
+                    SetlistChecklistDialogFragment.REQUEST_KEY_OK, this,
+                    (requestKey, bundle) -> {
                         onSetlistChecklistOkClicked(bundle.getParcelableArrayList(ARG_CHECKED_SETLISTS));
+                    });
+            activity.getSupportFragmentManager().setFragmentResultListener(
+                    SetlistChecklistDialogFragment.REQUEST_KEY_MANAGE_SETLISTS,
+                    this, (requestKey, bundle) -> {
+                        onManageSetlistsClicked();
                     });
         }
     }
@@ -181,6 +190,10 @@ public class LyricFragment extends Fragment
         });
     }
 
+    private void onManageSetlistsClicked() {
+        navController.navigate(R.id.action_lyricFragment_to_manageSetlistsFragment);
+    }
+
     private void onScrollChanged(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
         if (isUpdatingScroll) {
             isUpdatingScroll = false;
@@ -245,6 +258,14 @@ public class LyricFragment extends Fragment
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (song != null) {
+            outState.putParcelable(ARG_SONG, song);
+        }
     }
 
     public void onSetlistChecklistOkClicked(List<Setlist> checkedSetlists) {
