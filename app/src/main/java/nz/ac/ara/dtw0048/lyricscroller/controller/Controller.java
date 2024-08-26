@@ -56,8 +56,8 @@ public class Controller implements SearchResultListener {
         return lyricScroller.addSong(song);
     }
 
-    public Single<Song> findSong(String songName, String artist) {
-        return lyricScroller.findSong(songName, artist);
+    public Completable addSongWithCheck(Song song) {
+        return lyricScroller.addSongWithCheck(song);
     }
 
     public Completable updateSong(Song song) {

@@ -30,20 +30,11 @@ import nz.ac.ara.dtw0048.lyricscroller.model.SetlistOnClickListener;
 import nz.ac.ara.dtw0048.lyricscroller.model.SetlistSong;
 import nz.ac.ara.dtw0048.lyricscroller.model.Song;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MainFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MainFragment extends Fragment implements SetlistOnClickListener {
 
     private NavController navController;
     public MainFragment() {
         // Required empty public constructor
-    }
-
-    public static MainFragment newInstance() {
-        return new MainFragment();
     }
 
     @Override
@@ -63,11 +54,15 @@ public class MainFragment extends Fragment implements SetlistOnClickListener {
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
 
-        view.findViewById(R.id.searchButton).setOnClickListener((v) -> {
+        view.findViewById(R.id.searchButton).setOnClickListener(v -> {
             navController.navigate(R.id.action_mainFragment_to_searchFragment);
         });
 
-        view.findViewById(R.id.manageSetlistsButton).setOnClickListener((v) -> {
+        view.findViewById(R.id.createNewLyricsButton).setOnClickListener(v -> {
+            navController.navigate(R.id.action_mainFragment_to_editSongFragment);
+        });
+
+        view.findViewById(R.id.manageSetlistsButton).setOnClickListener(v -> {
             navController.navigate(R.id.action_mainFragment_to_manageSetlistsFragment);
         });
 

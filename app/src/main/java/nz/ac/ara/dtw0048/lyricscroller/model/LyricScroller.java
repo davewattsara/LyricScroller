@@ -60,6 +60,18 @@ public class LyricScroller {
         database.close();
     }
 
+    public Completable addSongWithCheck(Song song) {
+        if (song.songName.trim().equals("") || song.artistName.trim().equals(""))
+            return Completable.error(new BlankNameException());
+        return database.songDao().findSong(song.songName, song.artistName).flatMapCompletable(duplicate -> {
+            if (duplicate == null || duplicate.size() == 0)
+                return database.songDao().insert(song);
+            return Completable.error(new DuplicateNameException());
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
+
     public Completable addSong(Song song) {
         return database.songDao().insert(song)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -74,12 +86,6 @@ public class LyricScroller {
 
     public Single<List<Song>> findByArtist(String artist) {
         return database.songDao().findByArtist(artist)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
-    }
-
-    public Single<Song> findSong(String songName, String artist) {
-        return database.songDao().findSong(songName, artist)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }

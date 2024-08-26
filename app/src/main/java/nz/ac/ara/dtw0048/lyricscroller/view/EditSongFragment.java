@@ -106,11 +106,16 @@ public class EditSongFragment extends Fragment {
                 } else if (e instanceof DuplicateNameException) {
                     Toast.makeText(getContext(), "Song with that name by that artist already exists.", Toast.LENGTH_LONG)
                             .show();
+                } else {
+                    e.printStackTrace();
                 }
             }
         };
 
-        if (song != null) {
+        if (song == null) {
+            controller.addSongWithCheck(newSong)
+                    .subscribe(observer);
+        } else {
             if (newSong.songName.equals(song.songName) && newSong.artistName.equals(song.artistName)) {
                 controller.updateSong(newSong).subscribe(observer);
             }
@@ -128,10 +133,6 @@ public class EditSongFragment extends Fragment {
                                     .subscribe(observer);
                         })
                         .create().show();
-
-                //controller.renameAndUpdateSong(song.songName, song.artistName, newSong)
-                //        .subscribe(observer);
-
             }
         }
     }

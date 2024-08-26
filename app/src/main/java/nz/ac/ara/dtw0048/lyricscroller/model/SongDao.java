@@ -22,7 +22,7 @@ public abstract class SongDao {
     public abstract Single<List<Song>> findByArtist(String artist);
 
     @Query("SELECT * FROM Song WHERE artist_name = :artist AND song_name = :songName LIMIT 1")
-    public abstract Single<Song> findSong(String songName, String artist);
+    public abstract Single<List<Song>> findSong(String songName, String artist);
 
     @Query("SELECT * FROM setlist" +
             " INNER JOIN setlistsong ON setlistsong.setlist_name = setlist.setlist_name" +
